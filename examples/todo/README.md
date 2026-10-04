@@ -48,6 +48,12 @@ The installed host VM lacks `tern.ui.el`; tern-ui supplies Done/Undo actions
 without changing the stored tasks. See the library's compatibility notes for
 unverified native behavior.
 
+Completed tasks keep their existing struck-through labels and dim the full
+row, including its completion control and Delete action. Reopening restores the
+row's normal emphasis. The completion mark is rendered on TaskRow and the
+Todo-specific rule is scoped to `plugin.todo.list` in `todo.css`, so other
+plugin rows are unaffected.
+
 ## Type checking
 
 From the SDK root, with luau-lsp installed:

@@ -5,6 +5,7 @@ version = "0.1.0"
 description = "A persistent checklist with a native text field."
 icon = "check"
 host = "host.luau"
+styles = ["todo.css"]
 
 [[blocks]]
 id = "list"

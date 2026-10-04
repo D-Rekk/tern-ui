@@ -98,7 +98,10 @@ function UI.TaskRow(props: TaskRowProps): Node
 	local checkboxProps: { [string]: any } = checkbox.p or {}
 	checkboxProps.grow = 1
 	checkbox.p = checkboxProps
-	return ui.node("row", { key = props.key }, {
+	return ui.node("row", {
+		key = props.key,
+		mark = if props.completed then "done" else nil,
+	}, {
 		checkbox,
 		UI.ActionButton({
 			key = "delete", label = "Delete", action = props.deleteAction,

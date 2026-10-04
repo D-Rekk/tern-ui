@@ -84,8 +84,10 @@ region root's children, not the root itself.
 `ActionButton` is a native badge with a click action, not a native HTML button.
 `Checkbox` displays a label and a checked control when `tern.ui.el` is available;
 its compatible rendering displays Done/Undo and the same label instead.
-`TaskRow` combines Checkbox and a Delete action; completion dims and strikes
-through its label. `EmptyState` displays muted explanatory text.
+`TaskRow` combines Checkbox and a Delete action. Its label remains
+struck through when complete; completed rows carry the stable `mark="done"`
+prop so consumers can dim the whole row with a scoped `[data-mark="done"]`
+rule. `EmptyState` displays muted explanatory text.
 
 ## Events belong to the app
 
