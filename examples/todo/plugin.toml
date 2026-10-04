@@ -1,0 +1,11 @@
+schema = 1
+id = "todo"
+name = "To-do"
+version = "0.1.0"
+description = "A persistent checklist with a native text field."
+icon = "check"
+host = "host.luau"
+
+[[blocks]]
+id = "list"
+title = "To-do list"

@@ -1,0 +1,19 @@
+# macOS metadata
+.DS_Store
+
+# Tern developer screenshots and generated output
+/target/
+
+# Local research, specs, and temporary issue drafts
+/.scratch/
+
+# Project-local Beads database and runtime files
+/.beads/
+/.beads.gate.lock*
+
+# Local credentials; keep shareable examples trackable
+.env
+.env.*
+!.env.example
+
+# Keep .zed/, SDK definitions, and plugin-local vendor copies tracked.
