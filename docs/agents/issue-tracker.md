@@ -43,13 +43,18 @@ with `bd update ISSUE --claim`, and implements only its agreed scope.
 For each completed implementation pass, the Implementer spawns a task-scoped
 Committer. The Committer inspects the final diff, authors the commit message,
 and commits only that task's tracked changes. Commit before testing. Then the
-Implementer moves the Bead to `test` and spawns a task-scoped, read-only Tester.
-The Tester checks the change against the issue and reports evidence. On
-failure, the Tester comments findings on the Bead, returns it to
-`in_progress`, and hands findings to the Implementer. The Implementer repairs
-the change, commits the repair, then starts a fresh Tester pass; repeat until
-pass. On pass, the Tester records concise evidence on the Bead and moves it to
-`review`.
+Implementer moves the Bead to `test` and spawns a task-scoped Tester. The Tester
+is read-only for implementation: inspect the code for mistakes and in-scope
+better solutions, and actively exercise relevant edge cases. Report blocking
+defects or acceptance failures separately from optional in-scope suggestions;
+only failures block approval. Treat out-of-scope improvements as separate
+Beads. After reporting, return findings and control to the Implementer and
+terminate.
+
+On failure, the Tester comments findings on the Bead and returns it to
+`in_progress`. The Implementer repairs the change, commits the repair, then
+starts a fresh Tester pass; repeat until pass. On pass, the Tester records
+concise evidence on the Bead and moves it to `review`, then terminates.
 
 Human review closes the issue (`closed` / Done). Main/Lead may close only when
 the human explicitly requests closure; implementation and test pass alone do
