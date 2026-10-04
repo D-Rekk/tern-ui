@@ -155,3 +155,6 @@ Single-context: root `GLOSSARY.md` and `docs/adr/`. Before exploration, follow
 
 For plugin or SDK UI work, read the global `tern` skill and its
 `tern-sdk/SKILL.md` sub-skill, grounded in the official SDK book.
+
+When deriving Tern UI nodes with `tern.ui.el`, read
+`docs/tern-ui/examples/el.md` for composition and CSS patterns.

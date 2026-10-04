@@ -41,18 +41,22 @@ same host; each view and action reads the current store. Another open block
 shows changes on its next render. Unsubmitted drafts are not persisted.
 
 The app uses a host-side block because Tern canvases do not support text
-inputs. Its view uses tern-ui's TaskRow, EmptyState, TextInput, and ActionButton;
-TaskRow also uses Checkbox. The app still owns editing, storage, and events.
-Both native checkbox `change` events and compatible `action` events are handled.
-The installed host VM lacks `tern.ui.el`; tern-ui supplies Done/Undo actions
-without changing the stored tasks. See the library's compatibility notes for
-unverified native behavior.
+inputs. Its view uses tern-ui's TaskRow, EmptyState, TextInput, ActionButton,
+and CSS-backed Flex; TaskRow also uses Checkbox. Flex lays out the dock actions.
+The app still owns editing, storage, and events. Both native checkbox `change`
+events and compatible `action` events are handled.
 
 Completed tasks keep their existing struck-through labels and dim the full
 row, including its completion control and Delete action. Reopening restores the
 row's normal emphasis. The completion mark is rendered on TaskRow and the
 Todo-specific rule is scoped to `plugin.todo.list` in `todo.css`, so other
 plugin rows are unaffected.
+
+The daemon used in an earlier smoke lacked `tern.ui.el`. A fresh isolated
+Tern 0.4.5 (1d14241) runtime rendered Flex through its native CSS-backed row;
+the earlier daemon was left running. The example retains its Done/Undo and
+Flex row/column fallbacks for hosts without `el`. See the library's
+compatibility notes for runtime observations.
 
 ## Type checking
 

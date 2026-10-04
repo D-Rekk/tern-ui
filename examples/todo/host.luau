@@ -80,9 +80,11 @@ local def: BlockDef<State> = {
 					cursor = utf16(string.sub(state.draft, 1, state.cursor)),
 					placeholder = "What needs doing?", aria = "New task",
 				}),
-				ui.row({
-					UI.ActionButton({ label = "Add task", action = "add" }),
-					ui.text({ ui.span("Enter to add · toggle completion · Delete to remove", "muted") }),
+				UI.Flex({
+					children = {
+						UI.ActionButton({ label = "Add task", action = "add" }),
+						ui.text({ ui.span("Enter to add · toggle completion · Delete to remove", "muted") }),
+					},
 				}),
 			}),
 		}

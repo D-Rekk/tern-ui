@@ -14,8 +14,10 @@ if [ ! -f "$plugin_dir/plugin.toml" ]; then
     exit 1
 fi
 
-# Only this generated library file is replaced; other vendor files are untouched.
+# Only these generated library files are replaced; other vendor files are
+# untouched.
 destination="$plugin_dir/vendor/tern-ui"
 mkdir -p "$destination"
 cp "$source_dir/init.luau" "$destination/init.luau"
+cp "$source_dir/tern-ui.css" "$destination/tern-ui.css"
 printf 'Vendored tern-ui into %s\n' "$destination"

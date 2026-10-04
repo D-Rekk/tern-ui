@@ -1,0 +1,39 @@
+[data-surface^='plugin.'] .tern-ui-flex {
+	display: flex;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--row {
+	flex-direction: row;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--column {
+	flex-direction: column;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--gap-none {
+	gap: 0;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--gap-xs {
+	gap: 2px;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--gap-sm {
+	gap: 6px;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--gap-md {
+	gap: 10px;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--gap-lg {
+	gap: 16px;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--nowrap {
+	flex-wrap: nowrap;
+}
+
+[data-surface^='plugin.'] .tern-ui-flex--wrap {
+	flex-wrap: wrap;
+}

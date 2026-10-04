@@ -1,7 +1,7 @@
 --!strict
 -- Rendering only: consumers own state, events, keyboard editing, and storage.
 local ui = tern.ui
-local nativeCheckbox = type(ui.el) == "function"
+local nativeElement = type(ui.el) == "function"
 
 export type ActionButtonProps = {
 	label: string,
@@ -47,7 +47,42 @@ export type EmptyStateProps = {
 	key: string?,
 }
 
+export type FlexProps = {
+	children: { Node },
+	direction: ("row" | "column")?,
+	gap: ("none" | "xs" | "sm" | "md" | "lg")?,
+	wrap: boolean?,
+	class: string?,
+	key: string?,
+}
+
 local UI = {}
+
+function UI.Flex(props: FlexProps): Node
+	local direction = props.direction or "row"
+	local gap = props.gap or "sm"
+	if nativeElement then
+		local classes = {
+			"tern-ui-flex",
+			"tern-ui-flex--" .. direction,
+			"tern-ui-flex--gap-" .. gap,
+			"tern-ui-flex--" .. (if props.wrap then "wrap" else "nowrap"),
+		}
+		if props.class and props.class ~= "" then
+			table.insert(classes, props.class)
+		end
+		return ui.el("div", {
+			key = props.key,
+			class = table.concat(classes, " "),
+		}, props.children)
+	end
+	-- Built-in layouts preserve direction and gap without el. CSS classes and
+	-- wrapping have no equivalent on row/col nodes.
+	return ui.node(if direction == "column" then "col" else "row", {
+		key = props.key,
+		gap = gap,
+	}, props.children)
+end
 
 function UI.ActionButton(props: ActionButtonProps): Node
 	-- Badge actions are documented native controls and need no stylesheet.
@@ -62,7 +97,7 @@ end
 
 function UI.Checkbox(props: CheckboxProps): Node
 	local label = ui.text({ ui.span(props.label, if props.checked then "muted del" else "") })
-	if nativeCheckbox then
+	if nativeElement then
 		return ui.el("label", { key = props.key }, {
 			ui.el("input", {
 				key = "control", type = "checkbox", name = props.name, value = props.value,
