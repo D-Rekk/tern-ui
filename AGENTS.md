@@ -139,8 +139,14 @@ behavior or compatibility changes.
 
 ### Issue tracker
 
-Use this project's local Beads (`bd`) workspace for issues and specs. Read
-`docs/agents/issue-tracker.md` before tracker operations.
+Use this project's local Beads (`bd`) workspace for issues and specs. Before
+tracker operations and actionable repository work, read
+`docs/agents/issue-tracker.md` and follow its Bead gate and
+Implementer/Committer/Tester lifecycle. Create and link a Bead before
+non-trivial work; genuine no-ops and Q&A need none. Only typos/trivial files
+and bounded low-risk single-file changes with no public API, persistence, or
+cross-component impact may omit a ticket; those exceptions do not waive the
+role, verification, or commit workflow.
 
 ### Triage labels
 

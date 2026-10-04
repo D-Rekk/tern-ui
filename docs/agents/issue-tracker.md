@@ -23,6 +23,60 @@ In a directory without Git metadata, `bd context` cannot resolve a repository
 root and `bd ready` may warn that `beads.role` is unset. Database operations
 still work; do not initialize Git just to silence those diagnostics.
 
+## Issue gate and agent lifecycle
+
+Create a Bead for every actionable problem and non-trivial repository change
+before work begins. A genuine no-op or Q&A needs no ticket. A ticket may be
+omitted only for a typo/trivial file or a bounded, low-risk single-file change
+with no public API, persistence, or cross-component impact. These exceptions
+waive ticket creation only: role, verification, and commit steps still apply.
+Use the issue as the scope and acceptance source; if essential details are
+missing or conflict, send a clarification request through Main/Lead before
+proceeding.
+
+Main/Lead spawns a task-scoped Implementer for every change; use generic
+`task` agent instances with explicit role prompts and names, not persistent
+custom agent types. The Implementer reads the assigned issue, checks
+prerequisites, relays clarification requests to Main/Lead, claims the issue
+with `bd update ISSUE --claim`, and implements only its agreed scope.
+
+For each completed implementation pass, the Implementer spawns a task-scoped
+Committer. The Committer inspects the final diff, authors the commit message,
+and commits only that task's tracked changes. Commit before testing. Then the
+Implementer moves the Bead to `test` and spawns a task-scoped, read-only Tester.
+The Tester checks the change against the issue and reports evidence. On
+failure, the Tester comments findings on the Bead, returns it to
+`in_progress`, and hands findings to the Implementer. The Implementer repairs
+the change, commits the repair, then starts a fresh Tester pass; repeat until
+pass. On pass, the Tester records concise evidence on the Bead and moves it to
+`review`.
+
+Human review closes the issue (`closed` / Done). Main/Lead may close only when
+the human explicitly requests closure; implementation and test pass alone do
+not authorize closure.
+
+## Status lanes
+
+Configure Beads custom statuses for every workspace. For a new workspace run:
+
+```sh
+bd config set status.custom "test,review"
+```
+
+This project's local `status.custom` is `test,review`. The Ghostex Kanban lanes
+map to Beads statuses as follows; there is no Backlog lane:
+
+| Ghostex lane | Beads status |
+| --- | --- |
+| Todo | `open` |
+| In Progress | `in_progress` |
+| Test | `test` |
+| Review | `review` |
+| Done | `closed` |
+
+Triage labels remain separate from status lanes: labels express triage/readiness,
+not execution state. Preserve existing labels when changing status.
+
 ## Issue operations
 
 ```sh
