@@ -1,0 +1,12 @@
+schema = 1
+id = "overview"
+name = "tern-ui Overview"
+version = "0.1.0"
+description = "Interactive gallery of tern-ui components."
+icon = "grid"
+host = "host.luau"
+styles = ["vendor/tern-ui/tern-ui.css"]
+
+[[blocks]]
+id = "overview"
+title = "Overview"

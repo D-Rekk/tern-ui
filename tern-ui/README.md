@@ -188,9 +188,13 @@ definitions when updating Tern; definitions alone do not prove runtime support.
 | TaskRow | Compatible checkbox plus Delete were exercised earlier | Native checkbox interaction |
 | EmptyState | Muted text rendered | None |
 
-Only plugin blocks are supported initially. Canvases reject text input nodes;
-lens checkbox controls do not have block-style interaction. Do not treat this
-library as a canvas or lens adapter.
+## Component Overview example
+
+The directly installable [`examples/overview`](../examples/overview/README.md)
+plugin shows every current public constructor in one host-side block. It keeps
+interaction state transient, including its Unicode-aware TextInput sample. When
+adding a public component constructor, update this Overview gallery in the same
+change so the public component showcase stays complete.
 
 ## Check the consumer
 
