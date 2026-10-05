@@ -148,6 +148,8 @@ local def: BlockDef<State> = {
 			focus(cx)
 		elseif ev.ev == "blur" then
 			state.inputFocused = false
+		elseif ev.ev == "change" and ev.name == "overview-task" and ev.value == "sample" and state.taskPresent then
+			state.taskCompleted = ev.checked == true
 		elseif ev.ev == "change" and ev.name == "overview" and ev.value == "checkbox" then
 			state.checked = ev.checked == true
 		elseif ev.ev == "action" then
