@@ -6,6 +6,9 @@ without waiting for host resize notifications. Explicit **Board** and **Tabs**
 controls preserve the user's chosen layout. The viewer uses the official SDK
 directly, with no `tern-ui`, vendoring, build step, or additional dependencies.
 
+See the [light and dark screenshot gallery](docs/README.md) for Board, Tabs,
+expanded issue details, and compact native Picture-in-Picture views.
+
 ## Prerequisites and installation
 
 - Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, native
