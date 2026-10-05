@@ -162,7 +162,11 @@ end
 tern.block.define("viewer", {
 	init = function(cx: BlockCx, args: { string }, _saved: any): State
 		local path: string? = args[1]
-		if path and string.sub(path, 1, 1) ~= "/" and cx.cwd then
+		local absolute = if path
+			then string.match(path, "^[/\\]")
+				or string.match(path, "^%a:[/\\]")
+			else false
+		if path and not absolute and cx.cwd then
 			path = cx.cwd .. "/" .. path
 		end
 		local state: State = {
