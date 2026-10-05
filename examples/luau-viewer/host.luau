@@ -139,6 +139,7 @@ local function analyze(state: State)
 			state.status = "Could not start the Luau analyzer."
 			state.detail = first_lines(message, 8)
 		end
+	end
 end
 
 local function diagnostic_view(state: State): { Node }
