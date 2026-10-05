@@ -148,6 +148,11 @@ and bounded low-risk single-file changes with no public API, persistence, or
 cross-component impact may omit a ticket; those exceptions do not waive the
 role, verification, or commit workflow.
 
+For each issue whose implementation changes a Tern plugin package, increment
+the patch version in that affected package's `plugin.toml` manifest by 0.0.1
+once, in the same implementation commit. Do not bump versions for issue
+bookkeeping or repository-level documentation-only changes.
+
 ### Triage labels
 
 Use the five confirmed canonical labels; see `docs/agents/triage-labels.md`.
