@@ -107,7 +107,7 @@ end
 
 function View.render(state: State, cx: BlockCx): BlockView
 	local narrow = cx.cols < 110
-	local tabs = narrow or state.mode == "tabs"
+	local tabs = state.mode == "tabs" or (state.mode == "auto" and narrow)
 	local toolbar: { Node } = {}
 	if state.selected then table.insert(toolbar, button("← Board", "back", "back")) end
 	table.insert(toolbar, el("div", "beads-heading", nil, {
@@ -115,7 +115,9 @@ function View.render(state: State, cx: BlockCx): BlockView
 	}))
 	table.insert(toolbar, el("div", "beads-actions", nil, {
 		button(if state.loading then "Refreshing…" else "Refresh", "refresh", "refresh"),
-		button(if state.mode == "tabs" then "Board" else "Tabs", "mode", "mode", state.mode == "tabs"),
+		button("Auto", "layout=auto", "auto-mode", state.mode == "auto"),
+		button("Board", "layout=board", "board-mode", state.mode == "board"),
+		button("Tabs", "layout=tabs", "tabs-mode", state.mode == "tabs"),
 	}))
 	local children: { Node } = {
 		el("header", "beads-toolbar", { key = "toolbar" }, toolbar),
@@ -156,7 +158,7 @@ function View.render(state: State, cx: BlockCx): BlockView
 	end
 	local freshness = if state.loading then "Loading…" elseif state.fetched then "Updated " .. os.date("%H:%M:%S", state.fetched) else "Not loaded"
 	local count = if state.issues then tostring(#state.issues) .. " issues · " else ""
-	local help = if state.selected then "Esc back · r refresh" else "←→ lanes · ↑↓ cards · Enter details · r refresh · t tabs"
+	local help = if state.selected then "Esc back · r refresh" else "←→ lanes · ↑↓ cards · Enter details · r refresh · t layout"
 	return {
 		main = ui.col({ el("div", "beads-root", { key = "beads" }, children) }),
 		dock = ui.col({ ui.text({ ui.span(count .. freshness .. "  ·  ", "muted"), ui.span(help, "dim") }) }),

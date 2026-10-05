@@ -1,14 +1,17 @@
 # Beads
 
-A native, read-only Beads issue viewer for Tern. Wide panes open a horizontal
-Kanban board; narrow panes switch to status tabs. The viewer uses the official
-SDK directly, with no `tern-ui`, vendoring, build step, or additional dependencies.
+A native, read-only Beads issue viewer for Tern, with a horizontal Kanban board
+and compact status tabs. **Auto** follows the pane size reported by the host;
+explicit **Board** and **Tabs** controls remain usable when sizing is delayed.
+The viewer uses the official SDK directly, with no `tern-ui`, vendoring, build
+step, or additional dependencies.
 
 ## Prerequisites and installation
 
 - Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, manifest
   styles, asynchronous `tern.process.run`, and window session inspection.
-  The implementation targets Tern 0.4.5; the online SDK is unversioned.
+  Actual native loading and interactions were exercised on Tern 0.4.5
+  (1d14241); the online SDK is unversioned.
 - The Beads CLI (`bd`) on the **machine running the panes**, and an existing
   Beads project/database. Beads 1.3.0 provides the required `list --all --limit 0
   --json --readonly` flags and full issue text. Older versions must support those
@@ -87,10 +90,16 @@ an actionable error rather than opening another project's board.
 - **Refresh** or `r` reads the database again. There is no automatic polling.
   Repeated refresh requests while one is running are ignored; they do not
   launch concurrent processes.
-- Panes below 110 terminal columns use tabs automatically. **Tabs** or `t`
-  forces the tab layout even in a wide pane; **Board** restores automatic
-  Kanban/narrow-tab selection. Lane tabs wrap to keep every status reachable.
-  Horizontal scrolling exposes extra Kanban columns.
+- **Auto** (the default) uses Kanban at 110 or more host-reported terminal
+  columns and tabs below that threshold. **Board** forces Kanban regardless of
+  the reported size; **Tabs** forces compact tabs. `t` cycles Auto → Board →
+  Tabs. Lane tabs wrap to keep every status reachable; horizontal scrolling
+  exposes extra Kanban columns.
+- Tern 0.4.5 can initially report an 80×24 block size even when the client
+  pane is wider, and native resize notifications can be delayed. If Auto does
+  not match the pane you see, choose **Board** or **Tabs** explicitly. This is
+  a runtime sizing limitation, not a claim of reliable automatic resizing on
+  that build; both explicit modes work without a sizing notification.
 - `←`/`→` (or `h`/`l`) choose a lane; `↑`/`↓` (or `k`/`j`) choose its card.
   Home/End choose its first/last card. Enter or `o` opens the chosen issue.
   The outlined card is the keyboard selection. Pointer scrolling remains

@@ -142,6 +142,10 @@ local function open_issue(state: State, id: string?)
 	if issue then state.selected, state.cursor, state.lane = issue.id, issue.id, issue.status end
 end
 
+local function cycle_layout(state: State)
+	state.mode = if state.mode == "auto" then "board" elseif state.mode == "board" then "tabs" else "auto"
+end
+
 tern.block.define("board", {
 	init = function(cx: BlockCx, args: { string }, saved: any): State
 		local previous = running[cx.pane]
@@ -154,7 +158,7 @@ tern.block.define("board", {
 			issues = nil, lanes = {}, lane = if type(prefs.lane) == "string" then prefs.lane else "open",
 			cursor = if type(prefs.cursor) == "string" then prefs.cursor else nil,
 			selected = if type(prefs.selected) == "string" then prefs.selected else nil,
-			mode = if prefs.mode == "tabs" then "tabs" else "board",
+			mode = if prefs.mode == "board" or prefs.mode == "tabs" then prefs.mode else "auto",
 			loading = false, fetched = nil, problem = nil, request = 0,
 		}
 		running[cx.pane] = state
@@ -175,7 +179,7 @@ tern.block.define("board", {
 		local k = key.text or key.name
 		if k == "r" then refresh(state)
 		elseif key.name == "escape" or key.name == "backspace" then state.selected = nil
-		elseif k == "t" then state.mode = if state.mode == "tabs" then "board" else "tabs"
+		elseif k == "t" then cycle_layout(state)
 		elseif state.selected then return false
 		elseif key.name == "left" or k == "h" then move_lane(state, -1)
 		elseif key.name == "right" or k == "l" then move_lane(state, 1)
@@ -191,7 +195,7 @@ tern.block.define("board", {
 		if ev.ev ~= "action" then return end
 		if ev.act == "refresh" then refresh(state)
 		elseif ev.act == "back" then state.selected = nil
-		elseif ev.act == "mode" then state.mode = if state.mode == "tabs" then "board" else "tabs"
+		elseif ev.act == "layout" and (ev.value == "auto" or ev.value == "board" or ev.value == "tabs") then state.mode = ev.value
 		elseif ev.act == "lane" and ev.value then set_lane(state, ev.value)
 		elseif ev.act == "issue" then open_issue(state, ev.value) end
 	end,
