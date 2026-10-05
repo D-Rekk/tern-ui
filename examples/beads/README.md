@@ -1,16 +1,18 @@
 # Beads
 
 A native, read-only Beads issue viewer for Tern, with a horizontal Kanban board
-and compact status tabs. **Auto** follows the pane size reported by the host;
-explicit **Board** and **Tabs** controls remain usable when sizing is delayed.
-The viewer uses the official SDK directly, with no `tern-ui`, vendoring, build
-step, or additional dependencies.
+and compact status tabs. **Auto** switches to tabs in native Picture-in-Picture
+without waiting for host resize notifications. Explicit **Board** and **Tabs**
+controls preserve the user's chosen layout. The viewer uses the official SDK
+directly, with no `tern-ui`, vendoring, build step, or additional dependencies.
 
 ## Prerequisites and installation
 
-- Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, manifest
-  styles, asynchronous `tern.process.run`, and window session inspection.
-  Actual native loading and interactions were exercised on Tern 0.4.5
+- Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, native
+  `icon`/`kbd` nodes, manifest styles, asynchronous `tern.process.run`, and window
+  session inspection. The Auto PiP selector uses Tern 0.4.5's native
+  `.tn-pane.pip` owner class, an implementation hook rather than a stable SDK
+  contract. Actual native loading and interactions were exercised on Tern 0.4.5
   (1d14241); the online SDK is unversioned.
 - The Beads CLI (`bd`) on the **machine running the panes**, and an existing
   Beads project/database. Beads 1.3.0 provides the required `list --all --limit 0
@@ -82,28 +84,38 @@ an actionable error rather than opening another project's board.
 - Populated `blocked`, `deferred`, and unknown/custom statuses get additional
   lanes, sorted by their stored status. No status is silently discarded.
 - Cards show ID, title, priority, issue type, and assignee/labels when supplied.
-  P0 is critical. Issues are sorted by ascending priority, then ID.
+  P0 is critical. Issues are sorted by ascending priority, then ID. Status tints
+  distinguish lanes, tabs, and cards; In Progress and Test show pulsing WIP
+  indicators independently of fetching data.
 - Click a card to read its full description, design, acceptance criteria and
-  notes, plus issue metadata. Markdown text is rendered natively; nothing is
-  shortened by the viewer. Click **← Board**, press Escape, or press Backspace
-  to return. An issue absent after a successful refresh is reported explicitly.
-- **Refresh** or `r` reads the database again. There is no automatic polling.
-  Repeated refresh requests while one is running are ignored; they do not
-  launch concurrent processes.
-- **Auto** (the default) uses Kanban at 110 or more host-reported terminal
-  columns and tabs below that threshold. **Board** forces Kanban regardless of
-  the reported size; **Tabs** forces compact tabs. `t` cycles Auto → Board →
-  Tabs. Lane tabs wrap to keep every status reachable; horizontal scrolling
-  exposes extra Kanban columns.
-- Tern 0.4.5 can initially report an 80×24 block size even when the client
-  pane is wider, and native resize notifications can be delayed. If Auto does
-  not match the pane you see, choose **Board** or **Tabs** explicitly. This is
-  a runtime sizing limitation, not a claim of reliable automatic resizing on
-  that build; both explicit modes work without a sizing notification.
+  notes. Details place status/priority badges beneath the title, group metadata
+  into an issue overview, and separate each full Markdown content section.
+  Nothing is shortened by the viewer. Click **← Board**, press Escape, or press
+  Backspace to return. An issue absent after a successful refresh is reported
+  explicitly.
+- The icon-only **Refresh issues** control or `r` reads the database again.
+  Its rotating icon indicates a real pending request, not WIP issue activity.
+  There is no automatic polling. Repeated refresh requests while one is running
+  are ignored; they do not launch concurrent processes.
+- **Auto** (the default) uses Board while docked and compact Tabs in native
+  Picture-in-Picture. It keeps both layout trees available to client styles, so
+  float/dock switches immediately without a host update. Docking restores Board.
+  **Board** forces Kanban, including in PiP; **Tabs** forces compact tabs,
+  including when docked. `t` cycles Auto → Board → Tabs. Lane tabs wrap to keep
+  every status reachable; horizontal scrolling exposes extra Kanban columns.
+- Auto is a dock/PiP policy, not a general pane-width detector. For a narrow
+  docked split, choose **Tabs** explicitly. Tern 0.4.5 can leave host dimensions
+  unchanged on float/dock, so the viewer uses the native PiP owner class in CSS,
+  not `cx.cols`, timers, or cross-VM messages. A future Tern build that changes
+  this private class will require a selector update; explicit modes remain
+  independent.
 - `←`/`→` (or `h`/`l`) choose a lane; `↑`/`↓` (or `k`/`j`) choose its card.
   Home/End choose its first/last card. Enter or `o` opens the chosen issue.
   The outlined card is the keyboard selection. Pointer scrolling remains
   available for long boards and details.
+- The footer uses native Tern keycaps for **R** refresh and **T** layout, plus
+  **ESC** back while details are open. Other navigation keys remain supported
+  without crowding the action bar.
 
 Colors, surfaces, borders, and status accents use Tern theme variables rather
 than a hard-coded dark palette. Cards use stable issue IDs, and lane identities
