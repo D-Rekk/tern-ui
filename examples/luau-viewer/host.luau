@@ -134,11 +134,11 @@ local function analyze(state: State)
 		local message = tostring(err)
 		if string.find(message, "luau-lsp", 1, true) then
 			state.status = "Could not start luau-lsp. Install it and make it available on the Tern host's PATH."
+			state.detail = nil
 		else
 			state.status = "Could not start the Luau analyzer."
+			state.detail = first_lines(message, 8)
 		end
-		state.detail = first_lines(message, 8)
-	end
 end
 
 local function diagnostic_view(state: State): { Node }
