@@ -87,13 +87,13 @@ local function view(state: State)
 				} }),
 			}),
 			ui.col({
+				ui.text({ ui.span("Checkbox", "strong"), ui.span(" — native change mirrors checked; fallback action toggles current state.", "muted") }),
+				toggle,
+			}),
+			ui.col({
 				ui.text({ ui.span("TextInput", "strong"), ui.span(" — transient Unicode-aware editing; no storage.", "muted") }),
 				UI.TextInput({ key = "draft", text = state.draft, cursor = inputCursor, placeholder = "Type Unicode here…", aria = "Overview text input" }),
 				ui.text({ ui.span("Left/Right · Home/End · Backspace/Delete · Escape clears", "muted") }),
-			}),
-			ui.col({
-				ui.text({ ui.span("Checkbox", "strong"), ui.span(" — native change mirrors checked; fallback action toggles current state.", "muted") }),
-				toggle,
 			}),
 			ui.col({
 				ui.text({ ui.span("TaskRow", "strong"), ui.span(" — complete/reopen or delete, then restore the sample.", "muted") }),
