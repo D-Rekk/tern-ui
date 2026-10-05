@@ -67,7 +67,7 @@ local function view(state: State)
 		})
 	end
 	local inputCursor = utf16(string.sub(state.draft, 1, state.cursor))
-	local flexDirection = state.direction
+	local flexDirection: "row" | "column" = state.direction
 	return {
 		main = ui.col({
 			ui.text({ ui.span("tern-ui component gallery", "strong"), ui.span(" · all examples live together", "muted") }),
