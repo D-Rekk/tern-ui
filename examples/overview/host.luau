@@ -22,7 +22,7 @@ local function utf16(text: string): number
 end
 
 local function focus(cx: BlockCx)
-	cx:frame({ { "focus", "dock.draft" } })
+	cx:frame({ { "focus", "main.draft" } })
 end
 
 local function insert(state: State, text: string)
