@@ -1,0 +1,14 @@
+schema = 1
+id = "beads"
+name = "Beads"
+version = "1.0.0"
+description = "A read-only native Kanban board for your project's Beads issues."
+icon = "list"
+host = "host.luau"
+window = "window.luau"
+styles = ["beads.css"]
+
+[[blocks]]
+id = "board"
+title = "Beads board"
+icon = "list"
