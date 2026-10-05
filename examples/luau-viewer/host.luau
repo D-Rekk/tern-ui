@@ -213,7 +213,7 @@ tern.block.define("viewer", {
 		if state.read_error then
 			table.insert(children, ui.text({ ui.span(state.read_error, "error") }))
 		elseif state.source then
-			local source = ui.code(state.source, "luau", 1)
+			local source = ui.code(state.source, "lua", 1)
 			if source.p then
 				source.p.path = state.path
 			end
