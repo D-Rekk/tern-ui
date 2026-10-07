@@ -117,6 +117,8 @@ an actionable error rather than opening another project's board.
   The minimum target is about 40 terminal cells per card (312 CSS pixels at the
   measured default 13px font and 7.8px cell width), with extra space reserved
   for gaps and insets. Native PiP forces one column without waiting for resize.
+  Native resize events update a transient pane-column measurement; async
+  refreshes reuse that latest measurement rather than the initial context.
 - Auto is a dock/PiP policy, not a general pane-width detector. For a narrow
   docked split, choose **Tabs** explicitly. Tern 0.4.5 can leave host dimensions
   unchanged on float/dock, so the viewer uses the native PiP owner class in CSS,
@@ -192,7 +194,7 @@ a compatibility fallback.
 
 ## Read-only and security boundaries
 
-The only external operation is the asynchronous argument-vector invocation:
+The only external process invocation is the asynchronous argument vector:
 
 ```text
 bd list --all --limit 0 --json --readonly
@@ -206,6 +208,10 @@ responsibility. The plugin does not initialize databases, update statuses,
 edit issues, add comments, run a shell, provide drag-and-drop mutations, write
 project files, contact servers itself, or use persistent `tern.kv` storage.
 Tern saves only the UI/project preferences described above with the pane.
+
+User-initiated ID copying sends only the exact Bead ID to the receiving
+window's clipboard through `cx:copy`; it does not invoke another process,
+navigate, or mutate Beads data.
 
 `--readonly` blocks Beads issue mutations, not every filesystem effect of an
 external program: `bd` may still read configuration, acquire locks, or perform

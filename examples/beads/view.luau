@@ -4,7 +4,7 @@ type Issue = Model.Issue
 type Lane = Model.Lane
 export type Problem = { title: string, text: string, detail: string? }
 export type State = {
-	cx: BlockCx, project: string, executable: string?, issues: { Issue }?, lanes: { Lane },
+	cx: BlockCx, cols: number, project: string, executable: string?, issues: { Issue }?, lanes: { Lane },
 	lane: string, cursor: string?, selected: string?, mode: string,
 	loading: boolean, fetched: number?, problem: Problem?, request: number,
 }
@@ -226,10 +226,10 @@ local function shortcut(key: string, text: string, id: string): Node
 	})
 end
 
-function View.render(state: State, cx: BlockCx): BlockView
+function View.render(state: State, _cx: BlockCx): BlockView
 	-- Native CSS has integer repeat(), not auto-fill. Allow ~40 cells per card
 	-- plus gaps/insets; the PiP owner selector forces one column locally.
-	local columns = math.clamp(math.floor((cx.cols - 7) / 42), 1, 4)
+	local columns = math.clamp(math.floor((state.cols - 7) / 42), 1, 4)
 	local leading: { Node } = {}
 	if state.selected then
 		table.insert(leading, icon_button("arrow-left", "Back to board", "back", "back", "beads-back-button"))

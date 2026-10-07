@@ -1,4 +1,4 @@
-# Beads screenshot gallery
+# Beads 1.0.0 historical screenshot gallery
 
 [Back to the plugin README](../README.md)
 
@@ -7,6 +7,12 @@ Eight unmodified captures from native Beads plugin verification in Tern 0.4.5
 Datasets and viewport sizes vary: the Light captures use a 1450×754 viewport,
 and the Dark captures use 1450×980 (both at 2× pixel density). These document observed
 runtime views, not matched pixel comparisons or golden images.
+
+These captures show Beads **1.0.0**, not the current **1.0.1** chrome. Version
+1.0.1 adds explicit Open and ID-copy buttons, a sticky toolbar and opaque
+main-region footer, responsive Tabs cards, and status dots that pulse only
+for populated In Progress/Test lanes. See the [current plugin README](../README.md#interaction)
+for current interactions; the historical captures have not been recreated.
 
 ## Light
 
