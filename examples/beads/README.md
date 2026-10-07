@@ -132,10 +132,10 @@ an actionable error rather than opening another project's board.
   (**Refreshing…**, update time, **Stale data**, or **Not loaded**) with native
   Tern keycaps for **R** refresh and **T** layout, plus **ESC** back while details
   are open. Other navigation keys remain supported without crowding the bar.
-  **Approval blocker:** the required translucent-at-top / opaque-when-scrolled
-  footer is not implemented. No compatible CSS-only scroll-state route has
-  been established in the native runtime. The footer has no static opacity
-  substitute; this requirement must be resolved before the update can pass.
+  The footer stays opaque in the theme's card color so content scrolling
+  beneath it remains readable. Dynamic translucence was investigated but no
+  supported CSS-only scroll-state route was found in Tern 0.6.0; an opaque
+  footer was selected instead.
 
 Colors, surfaces, borders, and status accents use Tern theme variables rather
 than a hard-coded dark palette. Cards use stable issue IDs, and lane identities

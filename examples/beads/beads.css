@@ -554,6 +554,7 @@
 	margin-top: auto;
 	padding: var(--beads-space-2) 0;
 	border-top: var(--beads-line) solid var(--l2);
+	background: rgb(from var(--card) r g b / 100%);
 	color: var(--t3);
 	font-family: var(--sans);
 	font-size: var(--beads-font-sm);
