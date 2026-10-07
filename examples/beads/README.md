@@ -16,9 +16,8 @@ expanded issue details, and compact native Picture-in-Picture views.
   session inspection. The Auto PiP selector uses Tern 0.4.5's native
   `.tn-pane.pip` owner class, an implementation hook rather than a stable SDK
   contract. The original package's native loading and interactions were
-  exercised on Tern 0.4.5 (1d14241). The chrome update targets Tern 0.6.0
-  (0e39682); the online SDK is unversioned, and runtime acceptance for this
-  update remains pending.
+  exercised on Tern 0.4.5 (1d14241). Beads 1.0.1 loading and native interactions
+  were exercised on macOS Tern 0.6.0 (0e39682); the online SDK is unversioned.
 - The Beads CLI (`bd`) on the **machine running the panes**, and an existing
   Beads project/database. Beads 1.3.0 provides the required `list --all --limit 0
   --json --readonly` flags and full issue text. Older versions must support those
@@ -173,12 +172,17 @@ into a closed or replacement block. No polling timers remain behind.
 
 The copy control uses the official [host `cx:copy(text)` effect](https://docs.stencil.so/tern/reference/api-host.md#effect-cx),
 which copies the supplied ID to the clipboard of the window showing the pane.
-The native [`el` button](https://docs.stencil.so/tern/elements/el.md) and
-[`fetch`, `copy`, and `arrow-left` icons](https://docs.stencil.so/tern/elements/data.md#icon)
-are SDK contracts, not evidence of runtime acceptance. The 0.6.0 acceptance
-pass must check clipboard contents and keyboard activation in both layouts,
-long scrolling and footer opacity, refresh success/failure, reduced motion,
-detail return, and narrow/wide Tabs before the update is approved.
+Native Beads 1.0.1 acceptance on macOS Tern 0.6.0 (0e39682) exercised Board and
+Tabs mouse controls, native keyboard Enter/Space activation, exact-ID clipboard
+contents without navigation, and inert card bodies. Long board/tab/detail
+scrolling, opaque sticky chrome, back controls, delayed refresh success/failure,
+loading accessibility, reduced motion, and populated status dots were covered.
+Empty status dots retain prior native 0.6.0 coverage and were not newly rerun.
+Wrapping was verified on first load and reload, at 560/1280/1600-pixel
+window widths, with a 20px terminal font, during pending refresh, and through
+native PiP/dock switches. The read-only argv and single-flight guard were
+inspected in source rather than process-instrumented; pane-closure lifetime
+stress was not rerun. Dynamic footer opacity and CSS Grid are not claimed.
 
 Native compatibility probes on Tern 0.6.0 (0e39682) rejected both
 `repeat(auto-fill, minmax(300px, 1fr))` and
