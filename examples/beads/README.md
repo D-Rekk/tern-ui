@@ -113,12 +113,10 @@ an actionable error rather than opening another project's board.
   **Board** forces Kanban, including in PiP; **Tabs** forces compact tabs,
   including when docked. `t` cycles Auto → Board → Tabs. Lane tabs wrap to keep
   every status reachable; horizontal scrolling exposes extra Kanban columns.
-  Tabs cards use a CSS Grid with one to four columns, recomputed on pane resize.
-  The minimum target is about 40 terminal cells per card (312 CSS pixels at the
-  measured default 13px font and 7.8px cell width), with extra space reserved
-  for gaps and insets. Native PiP forces one column without waiting for resize.
-  Native resize events update a transient pane-column measurement; async
-  refreshes reuse that latest measurement rather than the initial context.
+  Tabs cards use native wrapping Flex: a 312 CSS-pixel minimum target, capped
+  at the available width, keeps narrow panes in one column and adds columns
+  as space permits. Wrapping responds directly to the rendered pane width,
+  not host resize notifications; native PiP forces one column immediately.
 - Auto is a dock/PiP policy, not a general pane-width detector. For a narrow
   docked split, choose **Tabs** explicitly. Tern 0.4.5 can leave host dimensions
   unchanged on float/dock, so the viewer uses the native PiP owner class in CSS,
@@ -182,11 +180,11 @@ pass must check clipboard contents and keyboard activation in both layouts,
 long scrolling and footer opacity, refresh success/failure, reduced motion,
 detail return, and narrow/wide Tabs before the update is approved.
 
-Native compatibility probes on Tern 0.6.0 (0e39682) rejected
-`repeat(auto-fill, minmax(min(300px, 100%), 1fr))` with an unexpected-token
-error. That is why the grid uses SDK pane columns and supported integer
-`repeat()` rather than browser auto-fill. The isolated 1280×800 window measured
-a 1248-pixel-wide main region and 160 pane columns at the default font.
+Native compatibility probes on Tern 0.6.0 (0e39682) rejected both
+`repeat(auto-fill, minmax(300px, 1fr))` and
+`repeat(auto-fit, minmax(300px, 1fr))`. Responsive wrapping Flex was selected
+instead of CSS Grid. It follows the actual surface width even when native
+control-viewport dimensions and daemon pane columns temporarily disagree.
 Successful main-region scrolling left its classes unchanged. The official
 [native CSS subset](https://docs.stencil.so/tern/styles/css.md) documents no
 scroll-state selector or scroll-driven animation timeline; browser CSS is not

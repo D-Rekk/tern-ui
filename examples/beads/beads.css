@@ -245,22 +245,19 @@
 	gap: var(--beads-space-3);
 }
 [data-surface='plugin.beads.board'] .beads-lane-tab .beads-cards {
-	display: grid;
-	grid-template-columns: minmax(0, 1fr);
+	flex-direction: row;
+	flex-wrap: wrap;
 	align-items: stretch;
 }
-[data-surface='plugin.beads.board'] .beads-tabs-columns-2 .beads-cards {
-	grid-template-columns: repeat(2, minmax(0, 1fr));
+[data-surface='plugin.beads.board'] .beads-lane-tab .beads-card {
+	flex: 1 1 312px;
+	min-width: min(312px, 100%);
+	max-width: 100%;
 }
-[data-surface='plugin.beads.board'] .beads-tabs-columns-3 .beads-cards {
-	grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-[data-surface='plugin.beads.board'] .beads-tabs-columns-4 .beads-cards {
-	grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-/* PiP geometry can change without a host resize notification. */
-.tn-pane.pip [data-surface='plugin.beads.board'] .beads-lane-tab .beads-cards {
-	grid-template-columns: minmax(0, 1fr);
+/* PiP changes locally without depending on host geometry notifications. */
+.tn-pane.pip [data-surface='plugin.beads.board'] .beads-lane-tab .beads-card {
+	flex-basis: 100%;
+	min-width: 100%;
 }
 [data-surface='plugin.beads.board'] .beads-card {
 	display: flex;

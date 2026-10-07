@@ -153,7 +153,7 @@ tern.block.define("board", {
 		local prefs = if type(saved) == "table" then saved else {}
 		local project = args[1] or (if type(prefs.project) == "string" then prefs.project else cx.cwd) or ""
 		local state: State = {
-			cx = cx, cols = cx.cols, project = project,
+			cx = cx, project = project,
 			executable = args[2] or (if type(prefs.executable) == "string" then prefs.executable else nil),
 			issues = nil, lanes = {}, lane = if type(prefs.lane) == "string" then prefs.lane else "open",
 			cursor = if type(prefs.cursor) == "string" then prefs.cursor else nil,
@@ -174,9 +174,6 @@ tern.block.define("board", {
 		return "Beads · " .. name
 	end,
 	view = View.render,
-	resize = function(state: State, cols: number, _rows: number, _cx: BlockCx)
-		state.cols = cols
-	end,
 	key = function(state: State, key: Key, _cx: BlockCx): boolean?
 		if key.ctrl or key.alt or key.meta then return false end
 		local k = key.text or key.name

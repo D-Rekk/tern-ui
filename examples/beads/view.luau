@@ -4,7 +4,7 @@ type Issue = Model.Issue
 type Lane = Model.Lane
 export type Problem = { title: string, text: string, detail: string? }
 export type State = {
-	cx: BlockCx, cols: number, project: string, executable: string?, issues: { Issue }?, lanes: { Lane },
+	cx: BlockCx, project: string, executable: string?, issues: { Issue }?, lanes: { Lane },
 	lane: string, cursor: string?, selected: string?, mode: string,
 	loading: boolean, fetched: number?, problem: Problem?, request: number,
 }
@@ -118,7 +118,7 @@ local function board_layout(lanes: { Lane }, cursor: string?): Node
 		el("div", "beads-board", { aria = "Kanban board" }, children),
 	})
 end
-local function tabs_layout(lanes: { Lane }, active_status: string, cursor: string?, columns: number): Node
+local function tabs_layout(lanes: { Lane }, active_status: string, cursor: string?): Node
 	local tabs: { Node } = {}
 	local active: Lane? = lanes[1]
 	for _, lane in lanes do
@@ -134,7 +134,7 @@ local function tabs_layout(lanes: { Lane }, active_status: string, cursor: strin
 	else
 		table.insert(children, message("No status lanes", "Refresh after adding issues with bd."))
 	end
-	return el("div", "beads-tabs-layout beads-tabs-columns-" .. tostring(columns), { key = "tabs-layout" }, children)
+	return el("div", "beads-tabs-layout", { key = "tabs-layout" }, children)
 end
 local function detail_badge(text: string, class: string): Node
 	return el("span", "beads-detail-badge " .. class, { text = text }, nil)
@@ -227,9 +227,6 @@ local function shortcut(key: string, text: string, id: string): Node
 end
 
 function View.render(state: State, _cx: BlockCx): BlockView
-	-- Native CSS has integer repeat(), not auto-fill. Allow ~40 cells per card
-	-- plus gaps/insets; the PiP owner selector forces one column locally.
-	local columns = math.clamp(math.floor((state.cols - 7) / 42), 1, 4)
 	local leading: { Node } = {}
 	if state.selected then
 		table.insert(leading, icon_button("arrow-left", "Back to board", "back", "back", "beads-back-button"))
@@ -280,9 +277,9 @@ function View.render(state: State, _cx: BlockCx): BlockView
 			table.insert(children, message("Your board is clear", "No Beads issues were found in this project. Refresh after adding issues with bd."))
 		elseif state.mode == "auto" then
 			table.insert(children, board_layout(state.lanes, state.cursor))
-			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor, columns))
+			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor))
 		elseif state.mode == "tabs" then
-			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor, columns))
+			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor))
 		else
 			table.insert(children, board_layout(state.lanes, state.cursor))
 		end
