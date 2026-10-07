@@ -29,6 +29,11 @@ local function button(text: string, action: string, key: string, active: boolean
 	if active ~= nil then props.attrs = { ["aria-pressed"] = active } end
 	return el("button", classes, props, nil)
 end
+local function icon_button(name: string, title: string, action: string, key: string, class: string): Node
+	return el("button", "beads-icon-button " .. class, {
+		key = key, actions = { click = action }, aria = title, title = title,
+	}, { ui.node("icon", { name = name }) })
+end
 local function message(title: string, text: string): Node
 	return el("section", "beads-message", { aria = title }, {
 		el("h3", "beads-message-title", { text = title }, nil),
@@ -38,8 +43,8 @@ end
 local function is_wip(status: string): boolean
 	return status == "in_progress" or status == "test"
 end
-local function status_mark(status: string): Node
-	return el("span", "beads-status-mark" .. (if is_wip(status) then " beads-status-mark-wip" else ""), {
+local function status_mark(status: string, populated: boolean): Node
+	return el("span", "beads-status-mark" .. (if is_wip(status) and populated then " beads-status-mark-wip" else ""), {
 		attrs = { ["aria-hidden"] = true },
 	}, nil)
 end
@@ -53,7 +58,10 @@ local function issue_card(issue: Issue, lane: Lane, cursor: string?): Node
 	if issue.assignee ~= "" then table.insert(meta, label("@" .. issue.assignee, "beads-assignee")) end
 	local kids: { Node } = {
 		el("div", "beads-card-topline", nil, {
-			label(issue.id, "beads-id"),
+			el("div", "beads-card-id", nil, {
+				label(issue.id, "beads-id"),
+				icon_button("copy", "Copy Bead ID " .. issue.id, "copy-issue=" .. issue.id, "copy", "beads-copy-button"),
+			}),
 			label(priority_text(issue), "beads-priority" .. (if issue.priority == 0 then " beads-critical" else "")),
 		}),
 		el("h3", "beads-card-title", { text = issue.title }, nil),
@@ -66,9 +74,12 @@ local function issue_card(issue: Issue, lane: Lane, cursor: string?): Node
 		end
 		table.insert(kids, el("div", "beads-labels", nil, labels))
 	end
+	table.insert(kids, el("button", "beads-button beads-open-button", {
+		key = "open", text = "Open", actions = { click = "issue=" .. issue.id },
+		aria = "Open Bead " .. issue.id, title = "Open Bead " .. issue.id,
+	}, nil))
 	return el("article", "beads-card beads-tone-" .. lane.tone .. (if cursor == issue.id then " beads-card-focused" else ""), {
-		key = issue.id, actions = { click = "issue=" .. issue.id },
-		aria = issue.id .. ": " .. issue.title .. ". Open issue details.", attrs = { role = "button" },
+		key = issue.id, aria = issue.id .. ": " .. issue.title,
 	}, kids)
 end
 local function lane_view(lane: Lane, cursor: string?, tabs: boolean, key_prefix: string): Node
@@ -80,9 +91,8 @@ local function lane_view(lane: Lane, cursor: string?, tabs: boolean, key_prefix:
 	}, {
 		el("header", "beads-lane-head", nil, {
 			el("div", "beads-lane-name", nil, {
-				status_mark(lane.status),
+				status_mark(lane.status, #lane.issues > 0),
 				label(lane.title, "beads-lane-title"),
-				if is_wip(lane.status) then label("WIP", "beads-wip-label") else label("", "beads-wip-label beads-wip-label-hidden"),
 			}),
 			label(tostring(#lane.issues), "beads-count"),
 		}),
@@ -96,7 +106,7 @@ local function lane_tab(lane: Lane, active: boolean): Node
 		aria = lane.title .. ", " .. tostring(#lane.issues) .. " issues" .. (if active then ", selected" else ""),
 		attrs = { ["aria-pressed"] = active },
 	}, {
-		status_mark(lane.status),
+		status_mark(lane.status, #lane.issues > 0),
 		label(lane.title, "beads-tab-title"),
 		label(tostring(#lane.issues), "beads-tab-count"),
 	})
@@ -108,7 +118,7 @@ local function board_layout(lanes: { Lane }, cursor: string?): Node
 		el("div", "beads-board", { aria = "Kanban board" }, children),
 	})
 end
-local function tabs_layout(lanes: { Lane }, active_status: string, cursor: string?): Node
+local function tabs_layout(lanes: { Lane }, active_status: string, cursor: string?, columns: number): Node
 	local tabs: { Node } = {}
 	local active: Lane? = lanes[1]
 	for _, lane in lanes do
@@ -124,7 +134,7 @@ local function tabs_layout(lanes: { Lane }, active_status: string, cursor: strin
 	else
 		table.insert(children, message("No status lanes", "Refresh after adding issues with bd."))
 	end
-	return el("div", "beads-tabs-layout", { key = "tabs-layout" }, children)
+	return el("div", "beads-tabs-layout beads-tabs-columns-" .. tostring(columns), { key = "tabs-layout" }, children)
 end
 local function detail_badge(text: string, class: string): Node
 	return el("span", "beads-detail-badge " .. class, { text = text }, nil)
@@ -151,7 +161,7 @@ local function detail(issue: Issue, lanes: { Lane }): Node
 	local priority_names = { [0] = "Critical", [1] = "High", [2] = "Medium", [3] = "Low", [4] = "Backlog" }
 	local badges: { Node } = {
 		el("span", "beads-detail-badge beads-status-badge beads-tone-" .. tone, nil, {
-			status_mark(issue.status), label(status_title, "beads-badge-text"),
+			status_mark(issue.status, true), label(status_title, "beads-badge-text"),
 		}),
 		detail_badge(
 			if issue.priority ~= nil then "P" .. issue.priority .. " · " .. (priority_names[issue.priority] or "Custom") else "Priority not set",
@@ -216,9 +226,14 @@ local function shortcut(key: string, text: string, id: string): Node
 	})
 end
 
-function View.render(state: State, _cx: BlockCx): BlockView
+function View.render(state: State, cx: BlockCx): BlockView
+	-- Native CSS has integer repeat(), not auto-fill. Allow ~40 cells per card
+	-- plus gaps/insets; the PiP owner selector forces one column locally.
+	local columns = math.clamp(math.floor((cx.cols - 7) / 42), 1, 4)
 	local leading: { Node } = {}
-	if state.selected then table.insert(leading, button("← Board", "back", "back", nil, "beads-back-button")) end
+	if state.selected then
+		table.insert(leading, icon_button("arrow-left", "Back to board", "back", "back", "beads-back-button"))
+	end
 	table.insert(leading, el("div", "beads-heading", nil, {
 		el("h2", "beads-title", { text = "Beads" }, nil),
 	}))
@@ -226,11 +241,11 @@ function View.render(state: State, _cx: BlockCx): BlockView
 	local toolbar: { Node } = {
 		el("div", "beads-toolbar-leading", nil, leading),
 		el("div", "beads-actions", nil, {
-			el("button", "beads-refresh", {
+			el("button", "beads-icon-button beads-refresh", {
 				key = "refresh", mark = if state.loading then "loading" else nil,
 				actions = { click = "refresh" }, aria = refresh_title, title = refresh_title,
 				attrs = { ["aria-busy"] = state.loading },
-			}, { ui.node("icon", { name = "redo" }) }),
+			}, { ui.node("icon", { name = "fetch" }) }),
 			el("div", "beads-layout-switch", { aria = "Board layout", attrs = { role = "group" } }, {
 				button("Auto", "layout=auto", "auto-mode", state.mode == "auto"),
 				button("Board", "layout=board", "board-mode", state.mode == "board"),
@@ -238,14 +253,12 @@ function View.render(state: State, _cx: BlockCx): BlockView
 			}),
 		}),
 	}
-	local freshness = if state.loading then "Refreshing…" elseif state.fetched then "Updated " .. os.date("%H:%M:%S", state.fetched) else "Not loaded"
+	local freshness = if state.loading then "Refreshing…"
+		elseif state.problem then (if state.issues then "Stale data" else "Not loaded")
+		elseif state.fetched then "Updated " .. os.date("%H:%M:%S", state.fetched) else "Not loaded"
 	local issue_count = if state.issues then tostring(#state.issues) .. (if #state.issues == 1 then " issue" else " issues") else "Waiting for issues"
 	local children: { Node } = {
 		el("header", "beads-toolbar", { key = "toolbar" }, toolbar),
-		el("div", "beads-context", { key = "context" }, {
-			el("p", "beads-project", { text = state.project, title = state.project }, nil),
-			label(issue_count .. " · " .. freshness, "beads-sync" .. (if state.loading then " beads-sync-loading" else "")),
-		}),
 	}
 	if state.problem then
 		local problem = state.problem
@@ -267,9 +280,9 @@ function View.render(state: State, _cx: BlockCx): BlockView
 			table.insert(children, message("Your board is clear", "No Beads issues were found in this project. Refresh after adding issues with bd."))
 		elseif state.mode == "auto" then
 			table.insert(children, board_layout(state.lanes, state.cursor))
-			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor))
+			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor, columns))
 		elseif state.mode == "tabs" then
-			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor))
+			table.insert(children, tabs_layout(state.lanes, state.lane, state.cursor, columns))
 		else
 			table.insert(children, board_layout(state.lanes, state.cursor))
 		end
@@ -278,14 +291,21 @@ function View.render(state: State, _cx: BlockCx): BlockView
 			ui.progress(nil, "Loading all Beads issues…"),
 		}))
 	end
-	local footer: { Node } = {
+	local shortcuts: { Node } = {
 		shortcut("r", "Refresh", "refresh"),
 		shortcut("t", "Layout", "layout"),
 	}
-	if state.selected then table.insert(footer, shortcut("esc", "Back", "back")) end
+	if state.selected then table.insert(shortcuts, shortcut("esc", "Back", "back")) end
+	table.insert(children, el("footer", "beads-footer", { key = "footer", aria = "Project and keyboard shortcuts" }, {
+		el("p", "beads-project", { text = state.project, title = state.project }, nil),
+		el("span", "beads-sync", {
+			text = issue_count .. " · " .. freshness,
+			attrs = { role = "status", ["aria-live"] = "polite", ["aria-atomic"] = true },
+		}, nil),
+		el("div", "beads-shortcuts", nil, shortcuts),
+	}))
 	return {
 		main = ui.col({ el("div", "beads-root beads-mode-" .. state.mode, { key = "beads" }, children) }),
-		dock = ui.col({ el("footer", "beads-footer", { key = "footer", aria = "Keyboard shortcuts" }, footer) }),
 	}
 end
 return View

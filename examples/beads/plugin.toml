@@ -1,7 +1,7 @@
 schema = 1
 id = "beads"
 name = "Beads"
-version = "1.0.0"
+version = "1.0.1"
 description = "A read-only native Kanban board for your project's Beads issues."
 icon = "list"
 host = "host.luau"
