@@ -20,6 +20,14 @@
 	--beads-motion-normal: 240ms;
 	--beads-motion-loop: 1600ms;
 }
+/* BlockView omits dock content, but Tern retains its native region shell. */
+.sf-dock[data-surface='plugin.beads.board']:empty {
+	display: none;
+}
+/* The native chat skin's inset requires an important override on Tern 0.6.2. */
+.sf-main[data-surface='plugin.beads.board'] {
+	padding: 0 !important;
+}
 [data-surface='plugin.beads.board'] .beads-root {
 	display: flex;
 	flex-direction: column;

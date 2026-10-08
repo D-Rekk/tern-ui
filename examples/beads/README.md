@@ -135,6 +135,10 @@ an actionable error rather than opening another project's board.
   beneath it remains readable. Dynamic translucence was investigated but no
   supported CSS-only scroll-state route was found in Tern 0.6.0; an opaque
   footer was selected instead.
+- Beads removes the unused native dock from layout only while it is empty, and
+  sets the native main region's padding to zero on all four sides. Toolbar,
+  footer and card padding remain unchanged. Both overrides match only
+  `plugin.beads.board`; a populated dock does not match the hiding rule.
 
 Colors, surfaces, borders, and status accents use Tern theme variables rather
 than a hard-coded dark palette. Cards use stable issue IDs, and lane identities
@@ -193,6 +197,33 @@ Successful main-region scrolling left its classes unchanged. The official
 [native CSS subset](https://docs.stencil.so/tern/styles/css.md) documents no
 scroll-state selector or scroll-driven animation timeline; browser CSS is not
 a compatibility fallback.
+
+### Native region spacing
+
+Tern owns the main, dock and layer region elements. Beads' `BlockView` returns
+only `main`; omitting `dock` supplies no dock content but does not delete Tern's
+native dock wrapper. The SDK has no documented `BlockView` control for deleting
+that wrapper. The Beads stylesheet uses `:empty { display: none; }` on its dock
+to remove the empty region from layout, **not** from the native element tree.
+
+The [public region styling hooks](https://docs.stencil.so/tern/styles/index.md)
+are `.sf-main` / `.sf-dock` with `data-surface` on the region itself. The
+`sf-chat-reader` class identifies Tern's Chat style setting; these rules do not
+depend on that mode or target another plugin's regions.
+The [native CSS contract](https://docs.stencil.so/tern/styles/css.md) supports
+`:empty`, `display: none`, and the four-sided `padding` shorthand.
+
+An isolated actual macOS Tern 0.6.2 (4b3ed42) GUI probe observed an empty native
+dock consuming 24 CSS pixels even with `dock` omitted. The scoped hiding rule
+collapsed it to an invisible zero-size rectangle while the element remained,
+and increased main-region height by 24 pixels. Plain `padding: 0` did not
+override the native main inset. `padding: 0 !important` removed the six-pixel
+top and bottom inset: the Beads root then exactly filled the main rectangle
+(`1248 × 734` at `16, 50`), with the toolbar at its top and footer at its bottom.
+A diagnostic `11px 13px 17px 19px !important` padding changed the root on all
+four sides, confirming their editability; the shipped value is zero throughout.
+These observations establish the region override on 0.6.2, not a rerun of the
+historical 0.6.0 interaction acceptance above.
 
 ## Read-only and security boundaries
 
