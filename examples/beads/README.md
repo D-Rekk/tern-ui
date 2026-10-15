@@ -187,6 +187,17 @@ The former Tabs card layout used responsive Flex instead of CSS Grid and
 followed actual surface width when control-viewport dimensions and daemon pane
 columns temporarily disagreed. Version 1.0.2 replaces those cards with native
 `list`/`item` rows, so the card-wrapping rule no longer applies.
+
+### Native list typography compatibility
+
+Some older Tern surfaces expose `--sf-lh` and `--sf-fs` values that collapse
+native list text and rows. The scoped Beads stylesheet sets its surface and
+native `.sf-item` rows to the larger of the surface line-height and 1.3 times
+the surface font size (`--sf-lh` defaults to 1.3 times the font size and
+`--sf-fs` defaults to `12px` when missing). This preserves a larger valid Tern
+line-height while ensuring rows have at least enough height for readable text
+in Board and Tabs. The fallback only affects `plugin.beads.board`; it does not
+change issue loading or storage.
 Successful main-region scrolling left its classes unchanged. The official
 [native CSS subset](https://docs.stencil.so/tern/styles/css.md) documents no
 scroll-state selector or scroll-driven animation timeline; browser CSS is not

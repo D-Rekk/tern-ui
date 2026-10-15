@@ -11,7 +11,7 @@
 	--beads-font-body: 12px;
 	--beads-font-label: 13px;
 	--beads-font-title: 22px;
-	--beads-line: 1px;
+	--beads-safe-line-height: max(var(--sf-lh, calc(var(--sf-fs, 12px) * 1.3)), calc(var(--sf-fs, 12px) * 1.3));
 	--beads-rail: 3px;
 	--beads-control-size: 32px;
 	--beads-lane-width: 216px;
@@ -27,6 +27,14 @@
 /* The native chat skin's inset requires an important override on Tern 0.6.2. */
 .sf-main[data-surface='plugin.beads.board'] {
 	padding: 0 !important;
+}
+/* Older Tern surfaces can expose implausibly small metrics; keep their native rows readable. */
+[data-surface='plugin.beads.board'] {
+	line-height: var(--beads-safe-line-height);
+}
+[data-surface='plugin.beads.board'] .sf-item {
+	line-height: var(--beads-safe-line-height);
+	min-height: calc(var(--beads-safe-line-height) + 6px);
 }
 [data-surface='plugin.beads.board'] .beads-root {
 	display: flex;
