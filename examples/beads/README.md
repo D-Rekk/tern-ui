@@ -12,12 +12,14 @@ expanded issue details, and compact native Picture-in-Picture views.
 ## Prerequisites and installation
 
 - Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, native
-  `icon`/`kbd` nodes, manifest styles, asynchronous `tern.process.run`, and window
-  session inspection. The Auto PiP selector uses Tern 0.4.5's native
-  `.tn-pane.pip` owner class, an implementation hook rather than a stable SDK
-  contract. The original package's native loading and interactions were
-  exercised on Tern 0.4.5 (1d14241). Beads 1.0.1 loading and native interactions
-  were exercised on macOS Tern 0.6.0 (0e39682); the online SDK is unversioned.
+  `list`/`item` nodes (used by Beads 1.0.2 issue rows), `icon`/`kbd` nodes,
+  manifest styles, asynchronous `tern.process.run`, and window session
+  inspection. The Auto PiP selector uses Tern 0.4.5's native `.tn-pane.pip`
+  owner class, an implementation hook rather than a stable SDK contract. The
+  original package's native loading and interactions were exercised on Tern
+  0.4.5 (1d14241). Beads 1.0.1 loading and interactions were exercised on macOS
+  Tern 0.6.0 (0e39682); those runs do not establish older-runtime compatibility
+  for the 1.0.2 native list renderer. The online SDK is unversioned.
 - The Beads CLI (`bd`) on the **machine running the panes**, and an existing
   Beads project/database. Beads 1.3.0 provides the required `list --all --limit 0
   --json --readonly` flags and full issue text. Older versions must support those
@@ -87,19 +89,18 @@ an actionable error rather than opening another project's board.
   (`in_progress`), **Test** (`test`), **Review** (`review`), **Done** (`closed`).
 - Populated `blocked`, `deferred`, and unknown/custom statuses get additional
   lanes, sorted by their stored status. No status is silently discarded.
-- Cards show ID, title, priority, issue type, and assignee/labels when supplied.
-  P0 is critical. Issues are sorted by ascending priority, then ID. Status tints
-  distinguish lanes, tabs, and cards; In Progress and Test dots glow/pulse only
-  when their lane contains issues, independently of fetching data.
-- Use a card's explicit **Open** button to read its full description, design,
-  acceptance criteria and notes. The card body does not open details. The
-  icon-only **Copy Bead ID** button beside the ID copies that exact ID without
-  opening the issue. Both controls are native buttons with issue-specific
-  accessible names. Details place status/priority badges beneath the title,
-  group metadata into an issue overview, and separate each full Markdown
-  content section. Nothing is shortened by the viewer. Use the icon-only
-  **Back to board** arrow, press Escape, or press Backspace to return. An issue
-  absent after a successful refresh is reported explicitly.
+- Native list rows show the issue ID, title, type, assignee, labels, and priority;
+  P0 is highlighted in the error tone. Clicking a row opens its full description,
+  design, acceptance criteria, and notes. The context menu's **Copy Bead ID**
+  action copies only the exact ID; Tern's built-in **Copy** remains available for
+  row text. Use the icon-only **Back to board** arrow, press Escape, or press
+  Backspace to return. Details place status/priority badges beneath the title,
+  group metadata into an issue overview, and separate each full Markdown section.
+  An issue absent after a successful refresh is reported explicitly.
+- The block owns keyboard selection: `↑`/`↓` (or `k`/`j`) move within the active
+  lane; Home/End select the first/last issue, Enter or `o` opens it, and `←`/`→`
+  (or `h`/`l`) change lanes. Native selection tint follows the same cursor.
+  Pointer scrolling remains available for long boards and details.
 - The icon-only **Refresh issues** control or `r` reads the database again.
   Its native `fetch` icon rotates in its normal theme color only while a real
   request is pending, and stops on success or failure. Reduced-motion settings
@@ -107,25 +108,17 @@ an actionable error rather than opening another project's board.
   There is no automatic polling. Repeated refresh requests while one is running
   are ignored; they do not launch concurrent processes.
 - **Auto** (the default) uses Board while docked and compact Tabs in native
-  Picture-in-Picture. It keeps both layout trees available to client styles, so
-  float/dock switches immediately without a host update. Docking restores Board.
-  **Board** forces Kanban, including in PiP; **Tabs** forces compact tabs,
-  including when docked. `t` cycles Auto → Board → Tabs. Lane tabs wrap to keep
-  every status reachable; horizontal scrolling exposes extra Kanban columns.
-  Tabs cards use native wrapping Flex: a 312 CSS-pixel minimum target, capped
-  at the available width, keeps narrow panes in one column and adds columns
-  as space permits. Wrapping responds directly to the rendered pane width,
-  not host resize notifications; native PiP forces one column immediately.
+  Picture-in-Picture. Both layout trees stay mounted so float/dock switches
+  immediately without a host update; docking restores Board. **Board** forces
+  Kanban; **Tabs** forces the compact status view. `t` cycles Auto → Board → Tabs.
+  Lane tabs wrap to keep every status reachable; Board columns scroll
+  horizontally. Tabs shows one native issue list for the active lane.
 - Auto is a dock/PiP policy, not a general pane-width detector. For a narrow
   docked split, choose **Tabs** explicitly. Tern 0.4.5 can leave host dimensions
   unchanged on float/dock, so the viewer uses the native PiP owner class in CSS,
   not `cx.cols`, timers, or cross-VM messages. A future Tern build that changes
   this private class will require a selector update; explicit modes remain
   independent.
-- `←`/`→` (or `h`/`l`) choose a lane; `↑`/`↓` (or `k`/`j`) choose its card.
-  Home/End choose its first/last card. Enter or `o` opens the chosen issue.
-  The outlined card is the keyboard selection. Pointer scrolling remains
-  available for long boards and details.
 - The toolbar stays at the top of the main scroll region. One compact footer
   inside that same region combines project path, issue count and freshness
   (**Refreshing…**, update time, **Stale data**, or **Not loaded**) with native
@@ -137,19 +130,19 @@ an actionable error rather than opening another project's board.
   footer was selected instead.
 - Beads removes the unused native dock from layout only while it is empty, and
   sets the native main region's padding to zero on all four sides. Toolbar,
-  footer and card padding remain unchanged. Both overrides match only
+  footer and lane padding remain unchanged. Both overrides match only
   `plugin.beads.board`; a populated dock does not match the hiding rule.
 
 Colors, surfaces, borders, and status accents use Tern theme variables rather
-than a hard-coded dark palette. Cards use stable issue IDs, and lane identities
-use stored statuses. Project, layout, selected lane/card and detail selection
+than a hard-coded dark palette. Rows use stable issue IDs, and lane identities
+use stored statuses. Project, layout, selected lane/row, and detail selection
 survive plugin reload or pane restart; the issue dataset is **not persisted**
 and is freshly read on each restart.
 
 ## Loading and failures
 
 The first request shows loading progress. Empty databases and empty lanes have
-explicit empty states. Refreshes keep existing cards/details visible. A failed
+explicit empty states. Refreshes keep existing rows/details visible. A failed
 refresh retains the last successful dataset with a visible **Stale data**
 warning and the actual diagnostic; it does not masquerade as a successful empty
 board. Successful refresh clears the error and updates the footer timestamp.
@@ -189,10 +182,11 @@ inspected in source rather than process-instrumented; pane-closure lifetime
 stress was not rerun. Dynamic footer opacity and CSS Grid are not claimed.
 
 Native compatibility probes on Tern 0.6.0 (0e39682) rejected both
-`repeat(auto-fill, minmax(300px, 1fr))` and
-`repeat(auto-fit, minmax(300px, 1fr))`. Responsive wrapping Flex was selected
-instead of CSS Grid. It follows the actual surface width even when native
-control-viewport dimensions and daemon pane columns temporarily disagree.
+`repeat(auto-fill, minmax(300px, 1fr))` and `repeat(auto-fit, minmax(300px, 1fr))`.
+The former Tabs card layout used responsive Flex instead of CSS Grid and
+followed actual surface width when control-viewport dimensions and daemon pane
+columns temporarily disagreed. Version 1.0.2 replaces those cards with native
+`list`/`item` rows, so the card-wrapping rule no longer applies.
 Successful main-region scrolling left its classes unchanged. The official
 [native CSS subset](https://docs.stencil.so/tern/styles/css.md) documents no
 scroll-state selector or scroll-driven animation timeline; browser CSS is not

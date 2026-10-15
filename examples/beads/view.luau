@@ -51,43 +51,40 @@ end
 local function priority_text(issue: Issue): string
 	return if issue.priority ~= nil then "P" .. tostring(issue.priority) else "P?"
 end
-local function issue_card(issue: Issue, lane: Lane, cursor: string?): Node
-	local meta: { Node } = {
-		label(if issue.kind ~= "" then issue.kind else "issue", "beads-kind"),
-	}
-	if issue.assignee ~= "" then table.insert(meta, label("@" .. issue.assignee, "beads-assignee")) end
-	local kids: { Node } = {
-		el("div", "beads-card-topline", nil, {
-			el("div", "beads-card-id", nil, {
-				label(issue.id, "beads-id"),
-				icon_button("copy", "Copy Bead ID " .. issue.id, "copy-issue=" .. issue.id, "copy", "beads-copy-button"),
-			}),
-			label(priority_text(issue), "beads-priority" .. (if issue.priority == 0 then " beads-critical" else "")),
-		}),
-		el("h3", "beads-card-title", { text = issue.title }, nil),
-		el("div", "beads-meta", nil, meta),
-	}
-	if #issue.labels > 0 then
-		local labels: { Node } = {}
-		for i, name in issue.labels do
-			table.insert(labels, el("span", "beads-label", { key = tostring(i), text = name }, nil))
-		end
-		table.insert(kids, el("div", "beads-labels", nil, labels))
+local function issue_list(lane: Lane, cursor: string?, list_key: string, selected_prefix: string): Node
+	local items: { Node } = {}
+	for _, issue in lane.issues do
+		local meta = if issue.kind ~= "" then issue.kind else "issue"
+		if issue.assignee ~= "" then meta ..= " · @" .. issue.assignee end
+		if #issue.labels > 0 then meta ..= " · " .. table.concat(issue.labels, ", ") end
+		local priority = if issue.priority == 0
+			then { ui.span(priority_text(issue), "error strong") }
+			else priority_text(issue)
+		table.insert(items, ui.node("item", {
+			key = "issue-" .. issue.id,
+			label = { ui.span(issue.id, "mono") },
+			detail = issue.title .. " · " .. meta,
+			value = priority,
+			role = "beads.issue",
+			aria = issue.id .. ": " .. issue.title,
+			title = issue.title,
+			actions = { click = "issue=" .. issue.id, menu = { "Copy Bead ID=" .. issue.id } },
+		}))
 	end
-	table.insert(kids, el("button", "beads-button beads-open-button", {
-		key = "open", text = "Open", actions = { click = "issue=" .. issue.id },
-		aria = "Open Bead " .. issue.id, title = "Open Bead " .. issue.id,
-	}, nil))
-	return el("article", "beads-card beads-tone-" .. lane.tone .. (if cursor == issue.id then " beads-card-focused" else ""), {
-		key = issue.id, aria = issue.id .. ": " .. issue.title,
-	}, kids)
+	return ui.node("list", {
+		key = list_key,
+		aria = lane.title .. " issues",
+		selected = if cursor then selected_prefix .. ".issue-" .. cursor else nil,
+		empty = { ui.span("No issues in " .. lane.title .. ".", "muted") },
+	}, items)
 end
 local function lane_view(lane: Lane, cursor: string?, tabs: boolean, key_prefix: string): Node
-	local cards: { Node } = {}
-	for _, issue in lane.issues do table.insert(cards, issue_card(issue, lane, cursor)) end
-	if #cards == 0 then table.insert(cards, message("Lane clear", "No issues in " .. lane.title .. ".")) end
+	local key = key_prefix .. lane.status
+	local list_key = "issues"
+	local layout_path = if tabs then "main.beads.tabs-layout" else "main.beads.board-layout.lanes"
+	local selected_prefix = layout_path .. "." .. key .. "." .. list_key
 	return el("section", "beads-lane beads-tone-" .. lane.tone .. (if tabs then " beads-lane-tab" else ""), {
-		key = key_prefix .. lane.status, aria = lane.title .. " issues",
+		key = key, aria = lane.title .. " issues",
 	}, {
 		el("header", "beads-lane-head", nil, {
 			el("div", "beads-lane-name", nil, {
@@ -96,7 +93,7 @@ local function lane_view(lane: Lane, cursor: string?, tabs: boolean, key_prefix:
 			}),
 			label(tostring(#lane.issues), "beads-count"),
 		}),
-		el("div", "beads-cards", nil, cards),
+		issue_list(lane, cursor, list_key, selected_prefix),
 	})
 end
 local function lane_tab(lane: Lane, active: boolean): Node
@@ -115,7 +112,7 @@ local function board_layout(lanes: { Lane }, cursor: string?): Node
 	local children: { Node } = {}
 	for _, lane in lanes do table.insert(children, lane_view(lane, cursor, false, "board-lane-")) end
 	return el("div", "beads-board-layout", { key = "board-layout" }, {
-		el("div", "beads-board", { aria = "Kanban board" }, children),
+		el("div", "beads-board", { key = "lanes", aria = "Kanban board" }, children),
 	})
 end
 local function tabs_layout(lanes: { Lane }, active_status: string, cursor: string?): Node

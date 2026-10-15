@@ -198,7 +198,7 @@ tern.block.define("board", {
 		elseif ev.act == "layout" and (ev.value == "auto" or ev.value == "board" or ev.value == "tabs") then state.mode = ev.value
 		elseif ev.act == "lane" and ev.value then set_lane(state, ev.value)
 		elseif ev.act == "issue" then open_issue(state, ev.value)
-		elseif ev.act == "copy-issue" then
+		elseif ev.act == "Copy Bead ID" then
 			local issue = Model.find(state.issues, ev.value)
 			if issue then cx:copy(issue.id) end
 		end

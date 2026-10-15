@@ -55,11 +55,9 @@
 [data-surface='plugin.beads.board'] .beads-actions,
 [data-surface='plugin.beads.board'] .beads-layout-switch,
 [data-surface='plugin.beads.board'] .beads-lane-name,
-[data-surface='plugin.beads.board'] .beads-card-topline,
 [data-surface='plugin.beads.board'] .beads-detail-kicker,
 [data-surface='plugin.beads.board'] .beads-detail-badges,
 [data-surface='plugin.beads.board'] .beads-detail-labels,
-[data-surface='plugin.beads.board'] .beads-card-id,
 [data-surface='plugin.beads.board'] .beads-shortcuts,
 [data-surface='plugin.beads.board'] .beads-shortcut {
 	display: flex;
@@ -247,94 +245,10 @@
 	border-radius: var(--r-chip);
 	padding: var(--beads-space-1) var(--beads-space-2);
 }
-[data-surface='plugin.beads.board'] .beads-cards {
-	display: flex;
-	flex-direction: column;
-	gap: var(--beads-space-3);
-}
-[data-surface='plugin.beads.board'] .beads-lane-tab .beads-cards {
-	flex-direction: row;
-	flex-wrap: wrap;
-	align-items: stretch;
-}
-[data-surface='plugin.beads.board'] .beads-lane-tab .beads-card {
-	flex: 1 1 312px;
-	min-width: min(312px, 100%);
-	max-width: 100%;
-}
-/* PiP changes locally without depending on host geometry notifications. */
-.tn-pane.pip [data-surface='plugin.beads.board'] .beads-lane-tab .beads-card {
-	flex-basis: 100%;
-	min-width: 100%;
-}
-[data-surface='plugin.beads.board'] .beads-card {
-	display: flex;
-	flex-direction: column;
-	gap: var(--beads-space-2);
-	min-width: 0;
-	background: rgb(from var(--beads-status) r g b / 5%);
-	border: var(--beads-line) solid rgb(from var(--beads-status) r g b / 24%);
-	border-left: var(--beads-rail) solid var(--beads-status);
-	border-radius: var(--r-ctl);
-	padding: var(--beads-space-3);
-	transition: border-color var(--beads-motion-normal) var(--ease);
-}
-[data-surface='plugin.beads.board'] .beads-card-focused {
-	box-shadow: 0 0 0 2px rgb(from var(--accent) r g b / 46%);
-}
-[data-surface='plugin.beads.board'] .beads-card-topline {
-	justify-content: space-between;
-	gap: var(--beads-space-2);
-}
-[data-surface='plugin.beads.board'] .beads-card-id {
-	min-width: 0;
-	gap: var(--beads-space-1);
-}
-[data-surface='plugin.beads.board'] .beads-copy-button {
-	flex: 0 0 auto;
-	width: 24px;
-	height: 24px;
-	border-color: transparent;
-	background: transparent;
-}
-[data-surface='plugin.beads.board'] .beads-open-button {
-	align-self: flex-start;
-	margin-top: auto;
-	padding: var(--beads-space-1) var(--beads-space-2);
-}
 [data-surface='plugin.beads.board'] .beads-id {
 	color: var(--t3);
 	font-family: var(--mono);
 	font-size: var(--beads-font-xs);
-	overflow-wrap: anywhere;
-}
-[data-surface='plugin.beads.board'] .beads-card-title {
-	margin: 0;
-	font-size: var(--beads-font-label);
-	font-weight: 600;
-	line-height: 1.5;
-	overflow-wrap: anywhere;
-}
-[data-surface='plugin.beads.board'] .beads-meta,
-[data-surface='plugin.beads.board'] .beads-labels {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: var(--beads-space-1) var(--beads-space-2);
-}
-[data-surface='plugin.beads.board'] .beads-priority {
-	color: var(--t2);
-	font-family: var(--mono);
-	font-size: var(--beads-font-xs);
-	font-weight: 650;
-}
-[data-surface='plugin.beads.board'] .beads-critical {
-	color: var(--bad);
-}
-[data-surface='plugin.beads.board'] .beads-kind,
-[data-surface='plugin.beads.board'] .beads-assignee {
-	color: var(--t3);
-	font-size: var(--beads-font-sm);
 	overflow-wrap: anywhere;
 }
 [data-surface='plugin.beads.board'] .beads-label {
@@ -346,6 +260,7 @@
 	font-size: var(--beads-font-xs);
 	overflow-wrap: anywhere;
 }
+
 [data-surface='plugin.beads.board'] .beads-tabs {
 	display: flex;
 	flex-wrap: wrap;
@@ -602,7 +517,6 @@
 	}
 	[data-surface='plugin.beads.board'] .beads-button,
 	[data-surface='plugin.beads.board'] .beads-tab,
-	[data-surface='plugin.beads.board'] .beads-card,
 	[data-surface='plugin.beads.board'] .beads-icon-button {
 		transition-duration: 0s;
 	}
