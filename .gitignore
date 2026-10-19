@@ -16,6 +16,6 @@
 .env.*
 !.env.example
 
-# Do not track local editor configuration or generated SDK copies.
+Do not track local editor configuration.
 /.zed/
 /.vscode/settings.json
