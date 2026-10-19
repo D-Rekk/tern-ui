@@ -107,7 +107,38 @@ The custom statuses are `test` and `review`. Kanban lanes map to Beads statuses:
 Todo → `open`, In Progress → `in_progress`, Test → `test`, Review → `review`,
 Done → `closed`. Triage labels are separate from execution status.
 
-Useful commands:
+Initialize the local workspace only when `.beads/` is absent:
+
+```sh
+BEADS_DIR="$PWD/.beads" bd init --prefix tern-ui --non-interactive \\
+  --skip-hooks --skip-agents --remote ""
+bd where
+bd info --json
+```
+
+For a new workspace, configure the custom lanes with
+`bd config set status.custom "test,review"`. Verify that `bd where` and
+`bd info --json` identify this repository's local database. Do not reinitialize
+an existing workspace.
+
+Canonical issue operations:
+
+```sh
+bd create "Title" --type task --priority 2 --labels needs-triage \\
+  --description "Problem, scope, acceptance criteria"
+bd list --status open
+bd ready
+bd show ISSUE_ID
+bd comments ISSUE_ID
+bd comment ISSUE_ID "Progress, decision, or handoff"
+bd label add ISSUE_ID ready-for-agent
+bd label remove ISSUE_ID needs-triage
+bd close ISSUE_ID --reason "Completed and verified"
+```
+
+Only close after acceptance and verification; human review closes completed
+implementation issues.
+
 
 ```sh
 bd show ISSUE_ID
