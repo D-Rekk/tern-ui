@@ -1,7 +1,0 @@
-schema = 1
-id = "wip-example"
-name = "WIP Example"
-version = "0.1.0"
-description = "A work-in-progress example plugin."
-icon = "sparkle"
-window = "window.luau"
