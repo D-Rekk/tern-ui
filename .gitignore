@@ -17,3 +17,4 @@
 !.env.example
 
 # Keep .zed/, SDK definitions, and plugin-local vendor copies tracked.
+/.vscode/settings.json
