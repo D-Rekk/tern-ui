@@ -12,14 +12,11 @@ maintained runtime notes for this release.
 ## Prerequisites and installation
 
 - Desktop Tern with native plugin blocks, `tern.ui.node("el", ...)`, native
-  `list`/`item` nodes (used by Beads 1.0.2 issue rows), `icon`/`kbd` nodes,
-  manifest styles, asynchronous `tern.process.run`, and window session
-  inspection. The Auto PiP selector uses Tern 0.4.5's native `.tn-pane.pip`
-  owner class, an implementation hook rather than a stable SDK contract. The
-  original package's native loading and interactions were exercised on Tern
-  0.4.5 (1d14241). Beads 1.0.1 loading and interactions were exercised on macOS
-  Tern 0.6.0 (0e39682); those runs do not establish older-runtime compatibility
-  for the 1.0.2 native list renderer. The online SDK is unversioned.
+  `list`/`item`, `icon`/`kbd` nodes, manifest styles, asynchronous
+  `tern.process.run`, and window session inspection. See the package
+  [runtime notes](docs/README.md) for version-specific evidence and limits.
+- Auto PiP uses an implementation-specific owner class; compatibility depends on
+  the Tern runtime. The online SDK is unversioned.
 - The Beads CLI (`bd`) on the **machine running the panes**, and an existing
   Beads project/database. Beads 1.3.0 provides the required `list --all --limit 0
   --json --readonly` flags and full issue text. Older versions must support those
@@ -28,12 +25,18 @@ maintained runtime notes for this release.
   the package on the local window machine as well to get **Open Beads board**.
   iOS cannot run the CLI locally; a remote desktop host must supply the block.
 
-From the repository root (or use `github.com/D-Rekk/tern-ui/extensions/beads`):
+Install the published package with Tern's supported GitHub subpath syntax:
+
+```sh
+tern plugin install github.com/D-Rekk/tern-ui/extensions/beads
+```
+
+For checkout development from the repository root, use the local package path:
 
 ```sh
 tern plugin install ./extensions/beads
-```
 
+```
 To replace an installed copy after updating the source:
 
 ```sh
@@ -167,68 +170,8 @@ reused. Closed panes retire state when an outstanding request completes; an
 already-started process finishes or reaches its timeout, but cannot render
 into a closed or replacement block. No polling timers remain behind.
 
-The copy control uses the official [host `cx:copy(text)` effect](https://docs.stencil.so/tern/reference/api-host.md#effect-cx),
-which copies the supplied ID to the clipboard of the window showing the pane.
-Native Beads 1.0.1 acceptance on macOS Tern 0.6.0 (0e39682) exercised Board and
-Tabs mouse controls, native keyboard Enter/Space activation, exact-ID clipboard
-contents without navigation, and inert card bodies. Long board/tab/detail
-scrolling, opaque sticky chrome, back controls, delayed refresh success/failure,
-loading accessibility, reduced motion, and populated status dots were covered.
-Empty status dots retain prior native 0.6.0 coverage and were not newly rerun.
-Wrapping was verified on first load and reload, at 560/1280/1600-pixel
-window widths, with a 20px terminal font, during pending refresh, and through
-native PiP/dock switches. The read-only argv and single-flight guard were
-inspected in source rather than process-instrumented; pane-closure lifetime
-stress was not rerun. Dynamic footer opacity and CSS Grid are not claimed.
-
-Native compatibility probes on Tern 0.6.0 (0e39682) rejected both
-`repeat(auto-fill, minmax(300px, 1fr))` and `repeat(auto-fit, minmax(300px, 1fr))`.
-The former Tabs card layout used responsive Flex instead of CSS Grid and
-followed actual surface width when control-viewport dimensions and daemon pane
-columns temporarily disagreed. Version 1.0.2 replaces those cards with native
-`list`/`item` rows, so the card-wrapping rule no longer applies.
-
-### Native list typography compatibility
-
-Some older Tern surfaces expose `--sf-lh` and `--sf-fs` values that collapse
-native list text and rows. The scoped Beads stylesheet sets its surface and
-native `.sf-item` rows to the larger of the surface line-height and 1.3 times
-the surface font size (`--sf-lh` defaults to 1.3 times the font size and
-`--sf-fs` defaults to `12px` when missing). This preserves a larger valid Tern
-line-height while ensuring rows have at least enough height for readable text
-in Board and Tabs. The fallback only affects `plugin.beads.board`; it does not
-change issue loading or storage.
-Successful main-region scrolling left its classes unchanged. The official
-[native CSS subset](https://docs.stencil.so/tern/styles/css.md) documents no
-scroll-state selector or scroll-driven animation timeline; browser CSS is not
-a compatibility fallback.
-
-### Native region spacing
-
-Tern owns the main, dock and layer region elements. Beads' `BlockView` returns
-only `main`; omitting `dock` supplies no dock content but does not delete Tern's
-native dock wrapper. The SDK has no documented `BlockView` control for deleting
-that wrapper. The Beads stylesheet uses `:empty { display: none; }` on its dock
-to remove the empty region from layout, **not** from the native element tree.
-
-The [public region styling hooks](https://docs.stencil.so/tern/styles/index.md)
-are `.sf-main` / `.sf-dock` with `data-surface` on the region itself. The
-`sf-chat-reader` class identifies Tern's Chat style setting; these rules do not
-depend on that mode or target another plugin's regions.
-The [native CSS contract](https://docs.stencil.so/tern/styles/css.md) supports
-`:empty`, `display: none`, and the four-sided `padding` shorthand.
-
-An isolated actual macOS Tern 0.6.2 (4b3ed42) GUI probe observed an empty native
-dock consuming 24 CSS pixels even with `dock` omitted. The scoped hiding rule
-collapsed it to an invisible zero-size rectangle while the element remained,
-and increased main-region height by 24 pixels. Plain `padding: 0` did not
-override the native main inset. `padding: 0 !important` removed the six-pixel
-top and bottom inset: the Beads root then exactly filled the main rectangle
-(`1248 × 734` at `16, 50`), with the toolbar at its top and footer at its bottom.
-A diagnostic `11px 13px 17px 19px !important` padding changed the root on all
-four sides, confirming their editability; the shipped value is zero throughout.
-These observations establish the region override on 0.6.2, not a rerun of the
-historical 0.6.0 interaction acceptance above.
+Historical compatibility probes and runtime evidence are documented in
+[`docs/README.md`](docs/README.md), including the limits of what was exercised.
 
 ## Read-only and security boundaries
 

@@ -22,12 +22,13 @@ for the focused project.
 - `extensions/beads/`: self-contained Beads plugin; read its README and manifest.
 - `tern.d.luau`: root Tern SDK definitions.
 - `extensions/beads/tern.d.luau`: package-local generated SDK definitions.
+
 ## Development Commands
 
 Run from repository root:
 
 ```sh
-tern plugin install ./extensions/beads
+tern plugin install github.com/D-Rekk/tern-ui/extensions/beads
 tern plugin link ./extensions/beads
 tern plugin list
 tern plugin reload
@@ -44,7 +45,7 @@ definitions, and refreshes definitions for each extension package with a
 an installed plugin unless specifically authorized. Do not infer build steps
 from a workspace fixture. There is no repository-wide test framework.
 
-## Code Conventions & Common Patterns
+## Code Conventions
 
 - Follow existing Luau formatting: `--!strict`, tab indentation, PascalCase type
   aliases, local helpers, and explicit prop types.
@@ -55,6 +56,7 @@ from a workspace fixture. There is no repository-wide test framework.
 - Read `extensions/beads/README.md` for the plugin's behavior and runtime
   compatibility evidence before changing its contract.
 
+## Important Files
 
 - `extensions/beads/host.luau`: lifecycle, asynchronous issue loading and input.
 - `extensions/beads/lib/model.luau` and `lib/view.luau`: model and SDK views.
@@ -86,14 +88,43 @@ existing user data and installed plugins.
 
 ### Issue tracker
 
-Run from the root; use returned IDs. Follow the issue lifecycle, claim/lease,
-status lane, and operation guidance here: create a Bead before non-trivial
-work, claim before implementation, use a task-scoped Committer, commit before
-testing, then use a read-only Tester. Tester failures return the issue to
-issue to `in_progress`; a passing Tester records evidence and moves it to
-`review`. Human review closes issues; do not close them on test pass alone.
-Preserve existing issue data and serialize local tracker writes. Claims expire;
-heartbeat during long work.
+Use this repository's local Beads (`bd`) database under `.beads/`; run commands
+from the repository root and use returned issue IDs. Before actionable,
+non-trivial work create a Bead, claim it with `bd update ISSUE --claim`, and
+implement only its agreed scope. Genuine Q&A/no-op needs no issue; bounded
+trivial single-file changes may omit issue creation but still follow role,
+verification and commit requirements.
+
+For each completed implementation pass, spawn a task-scoped Committer to inspect
+the final diff, author the commit message, and commit only that task's tracked
+changes. Commit before testing. Move the issue to `test`, then spawn a read-only
+Tester to inspect the code and exercise relevant edge cases. Tester failures
+must be commented on the Bead and return it to `in_progress`; repair and commit,
+then use a fresh Tester. A passing Tester records concise evidence and moves the
+Bead to `review`. Human review closes issues; do not close on test pass alone.
+
+The custom statuses are `test` and `review`. Kanban lanes map to Beads statuses:
+Todo → `open`, In Progress → `in_progress`, Test → `test`, Review → `review`,
+Done → `closed`. Triage labels are separate from execution status.
+
+Useful commands:
+
+```sh
+bd show ISSUE_ID
+bd comments ISSUE_ID
+bd update ISSUE_ID --claim
+bd heartbeat ISSUE_ID
+bd comment ISSUE_ID "Progress, decision, or handoff"
+bd label add ISSUE_ID ready-for-agent
+bd label remove ISSUE_ID needs-triage
+bd update ISSUE_ID --status test
+bd update ISSUE_ID --status review
+```
+
+Claims are leased; heartbeat before expiry during long work, and stop if
+ownership is lost. Preserve existing issue data, avoid reinitialization,
+force-close, or deletion as routine workflow, and serialize local embedded
+database writes when agents are active.
 
 For each issue whose implementation changes a Tern plugin package, increment
 the patch version in that package's `plugin.toml` by 0.0.1 once in the

@@ -1,15 +1,13 @@
-# Tern Extension Repository
+# Tern Extensions
 
-Language for the Tern plugin package maintained in this repository.
+Language for the Tern plugin and Beads domain maintained in this repository.
 
 ## Language
 
-**Extension package**:
-A self-contained Tern plugin directory with a root `plugin.toml`, entry points,
-and any package-local modules and definitions. This repository's package is
-`extensions/beads`.
+**Tern plugin**:
+A Tern extension that contributes functionality to a Tern environment.
 _Avoid_: Example package
 
 **Beads board**:
-The read-only native Tern view of Beads issues provided by the Beads extension.
-The plugin reads issue data through `bd`; it does not mutate the project database.
+A read-only view of Beads issues organized by their workflow statuses.
+_Avoid_: Beads editor, issue manager
