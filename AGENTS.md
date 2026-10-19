@@ -21,7 +21,6 @@ for the focused project.
 
 - `extensions/beads/`: self-contained Beads plugin; read its README and manifest.
 - `tern.d.luau`: root Tern SDK definitions.
-- `extensions/beads/tern.d.luau`: package-local generated SDK definitions.
 
 ## Development Commands
 
@@ -32,16 +31,15 @@ tern plugin install github.com/D-Rekk/tern-ui/extensions/beads
 tern plugin link ./extensions/beads
 tern plugin list
 tern plugin reload
-./update-tern-definitions.sh
-sh -n update-tern-definitions.sh
+./scripts/update-tern-definitions.sh
+sh -n scripts/update-tern-definitions.sh
 luau-lsp analyze --platform=standard --definitions=@tern=tern.d.luau \\
   extensions/beads/host.luau extensions/beads/lib/model.luau \\
   extensions/beads/lib/view.luau extensions/beads/window.luau
 ```
 
-The definition script prints the installed Tern version, refreshes root SDK
-definitions, and refreshes definitions for each extension package with a
-`plugin.toml`. Installation is a deliberate user action; do not force-replace
+The definition script prints the installed Tern version and refreshes only root SDK
+definitions. Installation is a deliberate user action; do not force-replace
 an installed plugin unless specifically authorized. Do not infer build steps
 from a workspace fixture. There is no repository-wide test framework.
 
@@ -62,7 +60,7 @@ from a workspace fixture. There is no repository-wide test framework.
 - `extensions/beads/lib/model.luau` and `lib/view.luau`: model and SDK views.
 - `extensions/beads/window.luau`: cwd-aware command-palette integration.
 - `tern.d.luau`: root SDK definitions; `tern plugin types DIR` regenerates them.
-- `.vscode/settings.json` and `.zed/settings.json`: editor Luau settings.
+- `.vscode/settings.json` and `.zed/settings.json` are local editor settings ignored by Git.
 
 Treat the Beads manifest and source as authoritative when documentation differs.
 
