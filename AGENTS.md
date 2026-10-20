@@ -167,12 +167,8 @@ Use canonical labels: `needs-triage` (maintainer evaluation), `needs-info`
 `ready-for-human` (human implementation), and `wontfix` (will not be actioned).
 Labels express triage/readiness, not execution status.
 
-### Domain guidance
-
-Root `GLOSSARY.md` is the canonical domain vocabulary. Read it before exploring;
-use its terms in issues and docs, avoid rejected synonyms, and surface genuine
-gaps or conflicts rather than inventing competing vocabulary. No ADR directory
-is maintained; do not create unrelated domain documentation.
+Use standard Tern and Beads terminology. Add domain documentation only when
+genuinely needed to clarify project-specific language or decisions.
 
 ### Tern SDK
 
