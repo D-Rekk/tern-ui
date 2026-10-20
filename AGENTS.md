@@ -167,6 +167,8 @@ Use canonical labels: `needs-triage` (maintainer evaluation), `needs-info`
 `ready-for-human` (human implementation), and `wontfix` (will not be actioned).
 Labels express triage/readiness, not execution status.
 
+### Domain guidance
+
 Use standard Tern and Beads terminology. Add domain documentation only when
 genuinely needed to clarify project-specific language or decisions.
 
